@@ -17,6 +17,7 @@ public class SnakeFrame extends Frame{
 
 	private static SnakeFrame snakeFrame;
 	private Image image;
+	private MyPaintThread paintThread = new MyPaintThread();
 	
 	public static void main(String[] args) {
 		snakeFrame = new SnakeFrame();
@@ -35,6 +36,8 @@ public class SnakeFrame extends Frame{
 		});
 		this.setResizable(false);
 		this.setVisible(true);
+		
+		new Thread(paintThread).start();
 		
 		if(image == null) {
 			image = this.createImage(ROW*LENGTH,COLUMNS*WIDTH);
@@ -55,5 +58,30 @@ public class SnakeFrame extends Frame{
 			g.drawLine(i*WIDTH, 0, i*WIDTH, ROW*LENGTH);
 		}
 		g.setColor(c);
+		
+	}
+	
+	
+	// Use multi-thread to redraw 
+	public class MyPaintThread implements Runnable{
+		private static final boolean running = true;
+		private boolean pause = false;
+		
+		@Override
+		public void run() {
+			while(running) {
+				if(pause) {
+					continue;
+				}
+				repaint();
+				System.out.println("redraw");
+				try {
+					Thread.sleep(10000);
+				}catch(InterruptedException e){
+					e.printStackTrace();
+				}
+			}
+		}
+		
 	}
 }
