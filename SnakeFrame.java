@@ -2,6 +2,8 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -18,6 +20,8 @@ public class SnakeFrame extends Frame{
 	private static SnakeFrame snakeFrame;
 	private Image image;
 	private MyPaintThread paintThread = new MyPaintThread();
+	public Snake snake = new Snake(this);
+	public Food food = new Food(12,12);
 	
 	public static void main(String[] args) {
 		snakeFrame = new SnakeFrame();
@@ -44,6 +48,7 @@ public class SnakeFrame extends Frame{
 		}
 		Graphics offg = image.getGraphics();
 		paint(offg);
+		
 	}
 	
 	public void paint(Graphics g) {
@@ -59,7 +64,16 @@ public class SnakeFrame extends Frame{
 		}
 		g.setColor(c);
 		
+		snake.draw(g);
+		for(int i = 0; i< 10; i++) {
+			food.randomAppear();
+			food.draw(g);
+		}
+		
+		
 	}
+	
+	
 	
 	
 	// Use multi-thread to redraw 
@@ -74,7 +88,6 @@ public class SnakeFrame extends Frame{
 					continue;
 				}
 				repaint();
-				System.out.println("redraw");
 				try {
 					Thread.sleep(10000);
 				}catch(InterruptedException e){
@@ -83,5 +96,37 @@ public class SnakeFrame extends Frame{
 			}
 		}
 		
+//		public void pause() {
+//			pause = true;
+//		}
+//		
+//		public void recover() {
+//			pause = false;
+//		}
+//		
+//		public void dead() {
+//			pause = true;
+//		}
+//		public void reStart() {
+//			this.pause = false;
+//		}
+		
 	}
+	
+//	public class KeyMoniter extends KeyAdapter{
+//		
+//		@Override
+//		public void keyPressed(KeyEvent e) {
+//			int key = e.getKeyCode();
+//			if(key == KeyEvent.VK_SPACE) {
+//				paintThread.pause();
+//			}
+//			else if(key == KeyEvent.VK_B) {
+//				paintThread.recover();
+//			}
+//			else if(key == KeyEvent.VK_R) {
+//				paintThread.reStart();
+//			}
+//		}
+//	}
 }
