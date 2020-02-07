@@ -31,7 +31,7 @@ public class SnakeFrame extends Frame{
 	public void launch() {
 		this.setTitle("Hungry Snake");
 		this.setSize(ROW*LENGTH, COLUMNS*WIDTH);
-		this.setLocation(300,400);
+		this.setLocation(30,40);
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -40,15 +40,29 @@ public class SnakeFrame extends Frame{
 		});
 		this.setResizable(false);
 		this.setVisible(true);
-		
+		this.addKeyListener(new KeyMoniter());
 		new Thread(paintThread).start();
 		
+//		if(image == null) {
+//			image = this.createImage(ROW*LENGTH,COLUMNS*WIDTH);
+//		}
+//		Graphics offg = image.getGraphics();
+//		paint(offg);
+		
+	}
+	
+	
+	@Override
+	public void update(Graphics g) {
 		if(image == null) {
 			image = this.createImage(ROW*LENGTH,COLUMNS*WIDTH);
 		}
-		Graphics offg = image.getGraphics();
-		paint(offg);
+		Graphics graphic = image.getGraphics();
+		paint(graphic);
 		
+		g.drawImage(image, 0, 0, null);
+		snake.draw(g);
+		food.draw(g);
 	}
 	
 	public void paint(Graphics g) {
@@ -62,14 +76,7 @@ public class SnakeFrame extends Frame{
 		for(int i = 0; i < COLUMNS;i++) {
 			g.drawLine(i*WIDTH, 0, i*WIDTH, ROW*LENGTH);
 		}
-		g.setColor(c);
-		
-		snake.draw(g);
-		for(int i = 0; i< 10; i++) {
-			food.randomAppear();
-			food.draw(g);
-		}
-		
+		g.setColor(c);		
 		
 	}
 	
@@ -89,44 +96,46 @@ public class SnakeFrame extends Frame{
 				}
 				repaint();
 				try {
-					Thread.sleep(10000);
+					Thread.sleep(100);
 				}catch(InterruptedException e){
 					e.printStackTrace();
 				}
 			}
 		}
 		
-//		public void pause() {
-//			pause = true;
-//		}
-//		
-//		public void recover() {
-//			pause = false;
-//		}
-//		
-//		public void dead() {
-//			pause = true;
-//		}
-//		public void reStart() {
-//			this.pause = false;
-//		}
+		public void pause() {
+			pause = true;
+		}
+		
+		public void recover() {
+			pause = false;
+		}
+		
+		public void dead() {
+			pause = true;
+		}
+		public void reStart() {
+			this.pause = false;
+		}
 		
 	}
 	
-//	public class KeyMoniter extends KeyAdapter{
-//		
-//		@Override
-//		public void keyPressed(KeyEvent e) {
-//			int key = e.getKeyCode();
-//			if(key == KeyEvent.VK_SPACE) {
-//				paintThread.pause();
-//			}
-//			else if(key == KeyEvent.VK_B) {
-//				paintThread.recover();
-//			}
-//			else if(key == KeyEvent.VK_R) {
-//				paintThread.reStart();
-//			}
-//		}
-//	}
+	public class KeyMoniter extends KeyAdapter{
+		
+		@Override
+		public void keyPressed(KeyEvent e) {
+			int key = e.getKeyCode();
+			if(key == KeyEvent.VK_SPACE) {
+				paintThread.pause();
+			}
+			else if(key == KeyEvent.VK_B) {
+				paintThread.recover();
+			}
+			else if(key == KeyEvent.VK_R) {
+				paintThread.reStart();
+			}else {
+				snake.keyPressed(e);
+			}
+		}
+	}
 }
