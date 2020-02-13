@@ -22,6 +22,15 @@ public class SnakeFrame extends Frame{
 	private MyPaintThread paintThread = new MyPaintThread();
 	public Snake snake = new Snake(this);
 	public Food food = new Food(12,12);
+	public int score = 0;
+	
+	public int getScore() {
+		return score;
+	}
+	
+	public void setScore(int score) {
+		this.score = score;
+	}
 	
 	public static void main(String[] args) {
 		snakeFrame = new SnakeFrame();
@@ -32,6 +41,7 @@ public class SnakeFrame extends Frame{
 		this.setTitle("Hungry Snake");
 		this.setSize(ROW*LENGTH, COLUMNS*WIDTH);
 		this.setLocation(30,40);
+		this.setBackground(Color.WHITE);
 		this.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -43,12 +53,11 @@ public class SnakeFrame extends Frame{
 		this.addKeyListener(new KeyMoniter());
 		new Thread(paintThread).start();
 		
-//		if(image == null) {
-//			image = this.createImage(ROW*LENGTH,COLUMNS*WIDTH);
-//		}
-//		Graphics offg = image.getGraphics();
-//		paint(offg);
-		
+	}
+	
+	public boolean isGameOver = false;
+	public void gameOver() {
+		isGameOver = true;
 	}
 	
 	
@@ -61,10 +70,16 @@ public class SnakeFrame extends Frame{
 		paint(graphic);
 		
 		g.drawImage(image, 0, 0, null);
+		
+		if(isGameOver) {
+			g.drawString("END!!!!",ROW/2*LENGTH, COLUMNS/2*WIDTH);
+			paintThread.dead();
+		}
 		snake.draw(g);
 		food.draw(g);
 	}
 	
+
 	public void paint(Graphics g) {
 		Color c = g.getColor();
 		g.setColor(Color.GRAY);
@@ -79,9 +94,6 @@ public class SnakeFrame extends Frame{
 		g.setColor(c);		
 		
 	}
-	
-	
-	
 	
 	// Use multi-thread to redraw 
 	public class MyPaintThread implements Runnable{
