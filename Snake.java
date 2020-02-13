@@ -13,12 +13,13 @@ public class Snake {
 	public SnakeFrame snakeFrame;
 	public int size = 0;
 	public Node node = new Node(13,8,"Invalid");
+	public Node cur = null;
 	
 	// Constructor
 	public Snake(SnakeFrame snakeFrame) {
 		head = node;
 		tail = node;
-		size ++;
+		size = 1;
 		this.snakeFrame = snakeFrame;
 	}
 	
@@ -29,38 +30,41 @@ public class Snake {
 		
 		move();
 		for(Node node = head;node!= null;node = node.next) {
+//			System.out.print("hii");
 			node.draw(g);
 		}
 	}
 	
 	
 	public void addNodeInHead() {
-		Node node = null;
+		Node newnode = null;
 		switch(head.dir) {
 		case "Left":
-			node = new Node(head.row,head.col-1,head.dir);
+			newnode = new Node(head.row,head.col-1,head.dir);
 			break;
 		case "Right":
-			node = new Node(head.row,head.col+1,head.dir);
+			newnode = new Node(head.row,head.col+1,head.dir);
 			break;
 		case "Up":
-			node = new Node(head.row-1,head.col,head.dir);
+			newnode = new Node(head.row-1,head.col,head.dir);
 			break;
 		case "Down":
-			node = new Node(head.row+1,head.col,head.dir);
+			newnode = new Node(head.row+1,head.col,head.dir);
 			break;
 		default:
 			return;
 		}
 		
-		node.next = head;
-		head.pre = node;
-		head = node;
+		head.pre = newnode;
+		newnode.next = head;
+		head = newnode;
 	}
 	
 	
 	public void move() {
 		addNodeInHead();
+		checkDead();
+		deleteNodeInTail();
 	}
 	
 	public class Node{
@@ -86,18 +90,42 @@ public class Snake {
 		
 	}
 	
+	public void checkDead() {
+		if( head.row < 2 || head.row > SnakeFrame.ROW || head.col < 0 
+				|| head.col > SnakeFrame.COLUMNS) {
+			this.snakeFrame.gameOver();
+		}
+		
+		for(Node node = head.next; node != null; node = node.next) {
+			if(head.row == node.row && head.col == node.col) {
+				this.snakeFrame.gameOver();
+			}
+		}
+	}
+	
+	
+	public void deleteNodeInTail() {
+		if(tail == head) {
+			return;
+		}
+		
+		Node node = tail.pre;
+		tail = null;
+		node.next = null;
+		tail = node;
+	}
+	
+	
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
 		switch(key) {
 		case KeyEvent.VK_LEFT:
 			if(head.dir != "Left") {
-//				System.out.println("Left");
 				head.dir = "Left";
 			}
 			break;
 		case KeyEvent.VK_RIGHT:
 			if(head.dir != "Right") {
-//				System.out.println("Right");
 				head.dir = "Right";
 			}
 			break;
@@ -111,8 +139,6 @@ public class Snake {
 				head.dir = "Down";
 			}
 			break;
-		default:
-			System.out.println("hello");
 		}
 		
 	}
