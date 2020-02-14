@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.Random;
 
 public class Food {
@@ -28,5 +29,10 @@ public class Food {
 		
 		this.col = randomCol.nextInt(SnakeFrame.ROW);
 		this.row = randomRow.nextInt(SnakeFrame.COLUMNS);
+	}
+	
+	
+	public Rectangle getRect() {
+		return new Rectangle(col*WIDTH,row*LENGTH,WIDTH,LENGTH);
 	}
 }
