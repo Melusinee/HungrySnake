@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 
 import org.w3c.dom.Node;
@@ -13,7 +14,6 @@ public class Snake {
 	public SnakeFrame snakeFrame;
 	public int size = 0;
 	public Node node = new Node(13,8,"Invalid");
-	public Node cur = null;
 	
 	// Constructor
 	public Snake(SnakeFrame snakeFrame) {
@@ -30,7 +30,6 @@ public class Snake {
 		
 		move();
 		for(Node node = head;node!= null;node = node.next) {
-//			System.out.print("hii");
 			node.draw(g);
 		}
 	}
@@ -91,8 +90,8 @@ public class Snake {
 	}
 	
 	public void checkDead() {
-		if( head.row < 2 || head.row > SnakeFrame.ROW || head.col < 0 
-				|| head.col > SnakeFrame.COLUMNS) {
+		if( head.row <= 2 || head.row >= SnakeFrame.ROW || head.col <= 0 
+				|| head.col >= SnakeFrame.COLUMNS) {
 			this.snakeFrame.gameOver();
 		}
 		
@@ -141,6 +140,20 @@ public class Snake {
 			break;
 		}
 		
+	}
+	
+	
+	public Rectangle getRect() {
+		return new Rectangle(head.col*WIDTH,head.row*LENGTH,WIDTH,LENGTH);
+	}
+	
+	public boolean eatFood(Food food) {
+		if(this.getRect().intersects(food.getRect())) {
+			addNodeInHead();
+			food.randomAppear();
+			return true;
+		}
+		return false;
 	}
 	
 }
