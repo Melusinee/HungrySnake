@@ -17,8 +17,8 @@ public class SnakeFrame extends Frame{
 	public static final int ROW = 40;
 	public static final int COLUMNS = 40;
 
-	private static SnakeFrame snakeFrame;
-	private Image image;
+	private static SnakeFrame snakeFrame = null;
+	private Image image = null;
 	private MyPaintThread paintThread = new MyPaintThread();
 	public Snake snake = new Snake(this);
 	public Food food = new Food(12,12);
@@ -76,7 +76,20 @@ public class SnakeFrame extends Frame{
 			paintThread.dead();
 		}
 		snake.draw(g);
+		boolean isSuccess = snake.eatFood(food);
+		if(isSuccess) {
+			score += 5;
+		}
 		food.draw(g);
+		displayInfo(g);
+	}
+	
+	public void displayInfo(Graphics g) {
+		Color c = g.getColor();
+		g.setColor(Color.RED);
+		g.drawString("得分："+score,3*LENGTH, 3*WIDTH);
+		g.drawString("玩法：空格暂停，B键恢复，R键重新开始",3*LENGTH, 4*WIDTH);
+		g.setColor(c);
 	}
 	
 
@@ -98,17 +111,17 @@ public class SnakeFrame extends Frame{
 	// Use multi-thread to redraw 
 	public class MyPaintThread implements Runnable{
 		private static final boolean running = true;
-		private boolean pause = false;
+		public boolean pause = false;
 		
 		@Override
 		public void run() {
 			while(running) {
-				if(pause) {
-					continue;
+				if(!pause) {
+					repaint();
 				}
-				repaint();
+				
 				try {
-					Thread.sleep(100);
+					Thread.sleep(250);
 				}catch(InterruptedException e){
 					e.printStackTrace();
 				}
@@ -127,7 +140,9 @@ public class SnakeFrame extends Frame{
 			pause = true;
 		}
 		public void reStart() {
-			this.pause = false;
+			snakeFrame.isGameOver = false;
+			pause = false;
+			snake = new Snake(snakeFrame);
 		}
 		
 	}
